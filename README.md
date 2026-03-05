@@ -1,21 +1,16 @@
-# OpenSource AI Platform: Private Local Intelligence
+# AI Platform
 
-OpenSource AI Platform is a high-performance intelligence layer that runs directly in your browser. All processing is handled locally on your machine, ensuring total privacy and near-instant response times. 
+A private, high-performance AI that runs directly in your browser. No cloud, no tracking, 100% local.
 
 ## Features
+- **Total Privacy**: Everything stays on your computer.
+- **Offline Ready**: Works without an internet connection once initialized.
+- **Fast**: Optimized for your local hardware.
 
-- **Core Intelligence**: Advanced local reasoning optimized for speed and privacy.
-- **Zero Cloud**: Your conversations never leave your device. No tracking, no data collection.
-- **Offline Protocol**: Once synced, the platform functions entirely without an internet connection.
-- **Hardware Native**: Optimized for local graphics and compute power for real-time interaction.
-- **Open Standards**: Fully open-source and free for all users.
+## How to Use
+1. Click **Sync Intelligence** in the header.
+2. Wait for the core to load (100%).
+3. Start chatting privately.
 
-## Getting Started
-
-1. **Sync Core**: Click **Initialize AI** in the header to sync the AI intelligence core to your browser storage.
-2. **Ready State**: Once the sync is complete, the status will lock to **Ready State**.
-3. **Private Chat**: You're all set. Start chatting with a completely private and local intelligence instance.
-
-## Credits
-
-Crafted by **bxzex**.
+---
+Built by [bxzex](https://github.com/bxzex).
