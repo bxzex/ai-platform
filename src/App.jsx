@@ -8,12 +8,12 @@ import { useEngine } from './hooks/useEngine';
 import './App.css';
 
 const getInitialChats = () => {
-  const saved = localStorage.getItem('sonic_chats');
+  const saved = localStorage.getItem('ai_platform_chats');
   return saved ? JSON.parse(saved) : [{ id: '1', title: 'New Conversation', messages: [] }];
 };
 
 const getInitialUser = () => {
-  const saved = localStorage.getItem('sonic_user');
+  const saved = localStorage.getItem('ai_platform_user');
   return saved ? JSON.parse(saved) : { name: 'Local User', avatar: null };
 };
 
@@ -31,13 +31,13 @@ function App() {
 
   const [activeNodes, setActiveNodes] = useState(() => {
     try {
-      const saved = localStorage.getItem('sonic_active_nodes');
+      const saved = localStorage.getItem('ai_platform_active_nodes');
       return saved ? JSON.parse(saved) : {};
     } catch { return {}; }
   });
 
   useEffect(() => {
-    localStorage.setItem('sonic_active_nodes', JSON.stringify(activeNodes));
+    localStorage.setItem('ai_platform_active_nodes', JSON.stringify(activeNodes));
   }, [activeNodes]);
 
   useEffect(() => {
@@ -55,11 +55,11 @@ function App() {
   const { processQuery, loading, progress, loadCore } = useEngine();
 
   useEffect(() => {
-    localStorage.setItem('sonic_chats', JSON.stringify(chats));
+    localStorage.setItem('ai_platform_chats', JSON.stringify(chats));
   }, [chats]);
 
   useEffect(() => {
-    localStorage.setItem('sonic_user', JSON.stringify(userProfile));
+    localStorage.setItem('ai_platform_user', JSON.stringify(userProfile));
   }, [userProfile]);
 
   const activeChat = chats.find(c => c.id === activeChatId) || chats[0];
@@ -80,7 +80,7 @@ function App() {
     if (isSetup) {
       if (loading || isInitializing) return;
       if (activeNodes[SONIC_CORE]) {
-        alert('SONIC Intelligence is active and ready.');
+        alert('AI Intelligence is active and ready.');
         return;
       }
 
@@ -92,7 +92,7 @@ function App() {
           localStorage.setItem('sonic_active_nodes', JSON.stringify(newState));
           return newState;
         });
-        alert('SONIC Intelligence has been synced to your hardware.');
+        alert('AI Intelligence has been synced to your hardware.');
         return;
       } catch (e) {
         alert(e.message);
@@ -245,13 +245,13 @@ function App() {
             >
               <Menu size={20} />
             </button>
-            <div className="header-brand-mobile">SONIC</div>
+            <div className="header-brand-mobile">AI PLATFORM</div>
             <select
               className="model-selector desktop-only"
               value={core}
               onChange={(e) => setCore(e.target.value)}
             >
-              <option value={SONIC_CORE}>SONIC Intelligence</option>
+              <option value={SONIC_CORE}>AI Intelligence</option>
             </select>
 
             <div className="status-container">
@@ -310,7 +310,7 @@ function App() {
           {activeChat.messages.length === 0 ? (
             <div className="welcome-screen">
               <Logo size={100} />
-              <div className="brand-logo brand-gradient" style={{ marginTop: '1rem' }}>SONIC</div>
+              <div className="brand-logo brand-gradient" style={{ marginTop: '1rem' }}>AI PLATFORM</div>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
                 <span className="badge">OPEN SOURCE</span>
                 <span className="badge free">100% FREE</span>
@@ -337,7 +337,7 @@ function App() {
                 </div>
               </div>
               <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.7rem', marginTop: '1.5rem', fontStyle: 'italic' }}>
-                Once synced, SONIC runs entirely from your local hardware.
+                Once synced, this platform runs entirely from your local hardware.
               </p>
 
               <div style={{ marginTop: '2rem' }}>
@@ -459,13 +459,13 @@ function App() {
               <div className="docs-content" style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: '1rem' }}>
                 <h3>By bxzex</h3>
                 <p>
-                  SONIC is a private intelligence layer built by <strong>bxzex</strong>. It runs entirely on your hardware—no cloud, no tracking, and 100% free.
+                  OpenSource AI Platform is a private intelligence layer built by <strong>bxzex</strong>. It runs entirely on your hardware—no cloud, no tracking, and 100% free.
                 </p>
 
                 <h4>The Essentials</h4>
                 <ul style={{ paddingLeft: '1.2rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
                   <li><strong>Local Intelligence:</strong> High-performance, offline processing synced directly to your device.</li>
-                  <li><strong>SONIC Core:</strong> State-of-the-art neural architecture optimized for private reasoning.</li>
+                  <li><strong>AI Core:</strong> State-of-the-art neural architecture optimized for private reasoning.</li>
                   <li><strong>Privacy Standard:</strong> Your chats and data never leave your hardware.</li>
                 </ul>
 

@@ -7,7 +7,7 @@ const Sidebar = ({ chats, activeChatId, onNewChat, onSelectChat, onDeleteChat, o
             <div className="sidebar-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 0.5rem 1.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <Logo size={24} />
-                    <span style={{ fontWeight: 700, fontSize: '1rem', letterSpacing: '0.5px', color: 'var(--text-main)' }}>SONIC</span>
+                    <span style={{ fontWeight: 700, fontSize: '1rem', letterSpacing: '0.5px', color: 'var(--text-main)' }}>AI PLATFORM</span>
                 </div>
                 <button className="close-sidebar-mobile" onClick={onClose}>
                     <X size={20} />
