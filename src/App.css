@@ -5,7 +5,7 @@
   background-color: var(--bg-dark);
 }
 
-/* Sidebar Styling */
+
 .sidebar {
   width: 280px;
   height: 100%;
@@ -87,7 +87,7 @@
   color: #ef4444;
 }
 
-/* Main Chat Area */
+
 .chat-main {
   flex: 1;
   display: flex;
@@ -217,7 +217,7 @@
   padding-top: 4px;
 }
 
-/* Input Area */
+
 .input-area {
   padding: 2rem;
   max-width: 1600px;
@@ -285,7 +285,7 @@ textarea {
   box-shadow: none;
 }
 
-/* Welcome Screen */
+
 .welcome-screen {
   flex: 1;
   display: flex;
@@ -358,7 +358,7 @@ textarea {
   border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
-/* Modal Styling */
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -518,7 +518,7 @@ textarea {
   transform: translateY(-2px);
 }
 
-/* End of styles */
+
 
 .menu-toggle {
   display: none;
@@ -552,7 +552,7 @@ textarea {
   gap: 8px;
 }
 
-/* Mobile Media Queries */
+
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;

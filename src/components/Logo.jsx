@@ -21,7 +21,7 @@ const Logo = ({ size = 32, className = "" }) => {
                 </filter>
             </defs>
 
-            {/* Outer Rings */}
+            {}
             <circle
                 cx="50" cy="50" r="45"
                 stroke="url(#brand-grad)"
@@ -29,7 +29,7 @@ const Logo = ({ size = 32, className = "" }) => {
                 strokeOpacity="0.3"
             />
 
-            {/* Ionic Orbitals */}
+            {}
             <ellipse
                 cx="50" cy="50" rx="40" ry="15"
                 stroke="url(#brand-grad)"
@@ -45,14 +45,14 @@ const Logo = ({ size = 32, className = "" }) => {
                 opacity="0.6"
             />
 
-            {/* Central Star */}
+            {}
             <path
                 d="M50 20L54 42L76 46L54 50L58 72L50 54L42 72L46 50L24 46L46 42L50 20Z"
                 fill="url(#brand-grad)"
                 filter="url(#glow)"
             />
 
-            {/* Core Glow */}
+            {}
             <circle cx="50" cy="46" r="4" fill="white" filter="url(#glow)" opacity="0.9" />
         </svg>
     );
