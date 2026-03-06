@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, MessageSquare, Trash2, Download, Settings, X, Github, Linkedin } from 'lucide-react';
+import { Plus, MessageSquare, Trash2, Download, Settings, X, Github, Linkedin, Instagram } from 'lucide-react';
 
 const Sidebar = ({ 
   chats, 
@@ -104,6 +104,17 @@ const Sidebar = ({
         >
           <Linkedin size={16} style={{ opacity: 0.7 }} />
           <span style={{ fontSize: '0.9rem' }}>LinkedIn</span>
+        </a>
+
+        <a 
+          href="https://instagram.com/bxzex" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="history-item"
+          style={{ textDecoration: 'none', color: 'inherit', padding: '0.75rem' }}
+        >
+          <Instagram size={16} style={{ opacity: 0.7 }} />
+          <span style={{ fontSize: '0.9rem' }}>Instagram</span>
         </a>
 
         <div style={{ padding: '0.75rem', fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', opacity: 0.5 }}>
