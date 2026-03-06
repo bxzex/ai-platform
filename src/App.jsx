@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Zap, Shield, Cpu, Share2, X, Github, User, Download, Menu } from 'lucide-react';
+import { Send, Zap, Shield, Cpu, Share2, X, Github, User, Download, Menu, Bot } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ChatMessage from './components/ChatMessage';
 import { useEngine } from './hooks/useEngine';
@@ -13,7 +13,7 @@ const getInitialChats = () => {
 
 const getInitialUser = () => {
   const saved = localStorage.getItem('ai_platform_user');
-  return saved ? JSON.parse(saved) : { name: 'Local User', avatar: null };
+  return saved ? JSON.parse(saved) : { name: 'User', avatar: null };
 };
 
 function App() {
@@ -67,16 +67,12 @@ function App() {
 
     if (isSetup) {
       if (loading || isInitializing) return;
-      if (readyModels[DEFAULT_MODEL]) {
-        alert('AI model is ready.');
-        return;
-      }
+      if (readyModels[DEFAULT_MODEL]) return;
 
       setIsInitializing(true);
       try {
         await loadCore(DEFAULT_MODEL);
         setReadyModels(prev => ({ ...prev, [DEFAULT_MODEL]: true }));
-        alert('Setup complete. You can now chat offline.');
         return;
       } catch (e) {
         alert(e.message);
@@ -113,13 +109,7 @@ function App() {
         }
         setChats(prev => prev.map(c =>
           c.id === activeChatId
-            ? {
-              ...c,
-              messages: [
-                ...updatedMessages,
-                { role: 'assistant', content }
-              ]
-            }
+            ? { ...c, messages: [...updatedMessages, { role: 'assistant', content }] }
             : c
         ));
       });
@@ -238,24 +228,18 @@ function App() {
                 <div key={i} className={`message-wrapper ${m.role === 'assistant' ? 'ai-message' : 'user-message'}`}>
                   <div className="message-content-inner">
                     <div className={`avatar ${m.role === 'assistant' ? 'ai' : 'user'}`}>
-                      {m.role === 'assistant' ? <Cpu size={16} /> : <User size={16} />}
+                      {m.role === 'assistant' ? <Bot size={18} /> : <User size={18} />}
                     </div>
                     <div className="message-content">
-                      <ChatMessage message={m} />
+                      {m.content === '' && m.role === 'assistant' ? (
+                        <div className="shimmer-bg" style={{ height: '20px', width: '60%', borderRadius: '4px' }}></div>
+                      ) : (
+                        <ChatMessage message={m} />
+                      )}
                     </div>
                   </div>
                 </div>
               ))}
-              {loading && !activeChat.messages[activeChat.messages.length - 1]?.content && (
-                <div className="message-wrapper ai-message">
-                  <div className="message-content-inner">
-                    <div className="avatar ai"><Cpu size={16} /></div>
-                    <div className="message-content">
-                      <div className="shimmer-bg" style={{ height: '20px', width: '60%', borderRadius: '4px' }}></div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           )}
           <div ref={messagesEndRef} />
