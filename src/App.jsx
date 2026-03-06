@@ -1,15 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Zap, Shield, Cpu, Share2, X, Instagram, Linkedin, Github, Globe, User, Download, Menu } from 'lucide-react';
+import { Send, Zap, Shield, Cpu, Share2, X, Github, User, Download, Menu } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ChatMessage from './components/ChatMessage';
-import Logo from './components/Logo';
 import { useEngine } from './hooks/useEngine';
 import './App.css';
 
 const getInitialChats = () => {
   const saved = localStorage.getItem('ai_platform_chats');
-  return saved ? JSON.parse(saved) : [{ id: '1', title: 'New Conversation', messages: [] }];
+  return saved ? JSON.parse(saved) : [{ id: '1', title: 'New Chat', messages: [] }];
 };
 
 const getInitialUser = () => {
@@ -21,34 +20,23 @@ function App() {
   const [chats, setChats] = useState(getInitialChats);
   const [activeChatId, setActiveChatId] = useState(chats[0].id);
   const [input, setInput] = useState('');
-  const [core, setCore] = useState('Llama-3.2-3B-Instruct-q4f32_1-MLC');
-  const SONIC_CORE = 'Llama-3.2-3B-Instruct-q4f32_1-MLC';
+  const [model, setModel] = useState('Llama-3.2-3B-Instruct-q4f32_1-MLC');
+  const DEFAULT_MODEL = 'Llama-3.2-3B-Instruct-q4f32_1-MLC';
   const [showSettings, setShowSettings] = useState(false);
-  const [showDocs, setShowDocs] = useState(false);
   const [userProfile, setUserProfile] = useState(getInitialUser);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
 
-  const [activeNodes, setActiveNodes] = useState(() => {
+  const [readyModels, setReadyModels] = useState(() => {
     try {
-      const saved = localStorage.getItem('ai_platform_active_nodes');
+      const saved = localStorage.getItem('ai_platform_ready_models');
       return saved ? JSON.parse(saved) : {};
     } catch { return {}; }
   });
 
   useEffect(() => {
-    localStorage.setItem('ai_platform_active_nodes', JSON.stringify(activeNodes));
-  }, [activeNodes]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('sonic_active_nodes');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed[SONIC_CORE]) {
-        setActiveNodes(parsed);
-      }
-    }
-  }, []);
+    localStorage.setItem('ai_platform_ready_models', JSON.stringify(readyModels));
+  }, [readyModels]);
 
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
@@ -79,20 +67,16 @@ function App() {
 
     if (isSetup) {
       if (loading || isInitializing) return;
-      if (activeNodes[SONIC_CORE]) {
-        alert('AI Intelligence is active and ready.');
+      if (readyModels[DEFAULT_MODEL]) {
+        alert('AI model is ready.');
         return;
       }
 
       setIsInitializing(true);
       try {
-        await loadCore(SONIC_CORE);
-        setActiveNodes(prev => {
-          const newState = { ...prev, [SONIC_CORE]: true };
-          localStorage.setItem('sonic_active_nodes', JSON.stringify(newState));
-          return newState;
-        });
-        alert('AI Intelligence has been synced to your hardware.');
+        await loadCore(DEFAULT_MODEL);
+        setReadyModels(prev => ({ ...prev, [DEFAULT_MODEL]: true }));
+        alert('Setup complete. You can now chat offline.');
         return;
       } catch (e) {
         alert(e.message);
@@ -123,13 +107,9 @@ function App() {
           : c
       ));
 
-      await processQuery(updatedMessages, 'local', SONIC_CORE, (content) => {
-        if (!activeNodes[SONIC_CORE]) {
-          setActiveNodes(prev => {
-            const newState = { ...prev, [SONIC_CORE]: true };
-            localStorage.setItem('sonic_active_nodes', JSON.stringify(newState));
-            return newState;
-          });
+      await processQuery(updatedMessages, 'local', DEFAULT_MODEL, (content) => {
+        if (!readyModels[DEFAULT_MODEL]) {
+          setReadyModels(prev => ({ ...prev, [DEFAULT_MODEL]: true }));
         }
         setChats(prev => prev.map(c =>
           c.id === activeChatId
@@ -151,7 +131,7 @@ function App() {
   const createNewChat = () => {
     const newChat = {
       id: Date.now().toString(),
-      title: 'New Conversation',
+      title: 'New Chat',
       messages: []
     };
     setChats([newChat, ...chats]);
@@ -162,7 +142,7 @@ function App() {
     setChats(prev => {
       const filtered = prev.filter(c => c.id !== id);
       if (filtered.length === 0) {
-        return [{ id: Date.now().toString(), title: 'New Conversation', messages: [] }];
+        return [{ id: Date.now().toString(), title: 'New Chat', messages: [] }];
       }
       return filtered;
     });
@@ -174,43 +154,15 @@ function App() {
   const handleExport = (id) => {
     const chat = chats.find(c => c.id === id);
     if (!chat) return;
-
-    const content = chat.messages
-      .map(m => `${m.role.toUpperCase()}: ${m.content}\n`)
-      .join('\n');
-
+    const content = chat.messages.map(m => `${m.role.toUpperCase()}: ${m.content}\n`).join('\n');
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${chat.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
+    a.download = `chat_${id}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  const handleLink = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    alert('Link copied to clipboard.');
-  };
-
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUserProfile(prev => ({ ...prev, avatar: reader.result }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleUpdate = () => {
-    localStorage.setItem('sonic_user', JSON.stringify(userProfile));
-    alert('Identity updated.');
-    setShowSettings(false);
   };
 
   return (
@@ -223,146 +175,85 @@ function App() {
         onDeleteChat={handleDeleteChat}
         onDownloadChat={handleExport}
         onOpenSettings={() => setShowSettings(true)}
-        onOpenDocs={() => setShowDocs(true)}
         userProfile={userProfile}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
 
-      {isSidebarOpen && (
-        <div
-          className="mobile-sidebar-overlay"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      <main className={`chat-main ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+      <main className="chat-main">
         <header className="chat-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <button
-              className="menu-toggle"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button className="menu-toggle" onClick={() => setIsSidebarOpen(true)}>
               <Menu size={20} />
             </button>
-            <div className="header-brand-mobile">AI PLATFORM</div>
             <select
-              className="model-selector desktop-only"
-              value={core}
-              onChange={(e) => setCore(e.target.value)}
+              className="model-selector"
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
             >
-              <option value={SONIC_CORE}>AI Intelligence</option>
+              <option value={DEFAULT_MODEL}>Llama 3.2 (Local)</option>
             </select>
-
-            <div className="status-container">
-              {!activeNodes[SONIC_CORE] || isInitializing ? (
-                <button
-                  className="share-btn"
-                  onClick={() => handleAction(true)}
-                  disabled={loading || isInitializing}
-                  style={{
-                    padding: '0.4rem 0.8rem',
-                    fontSize: '0.8rem',
-                    background: 'var(--brand-gradient)',
-                    border: 'none',
-                    color: 'white',
-                    borderRadius: '10px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    minWidth: isInitializing ? '150px' : 'auto',
-                    justifyContent: 'center',
-                    fontWeight: 600,
-                    boxShadow: '0 4px 15px rgba(139, 92, 246, 0.3)'
-                  }}
-                >
-                  <Download size={14} />
-                  {isInitializing ? `${progress?.status || 'Active'} ${progress?.percent || 0}%` : 'Sync Intelligence'}
-                </button>
-              ) : (
-                <div className="ready-badge">
-                  <Zap size={14} />
-                  <span>Ready State</span>
-                </div>
-              )}
-
-              <span className="desktop-only" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', maxWidth: '140px', lineHeight: '1.2' }}>
-                {isInitializing ? (
-                  <strong>Syncing...</strong>
-                ) : !activeNodes[SONIC_CORE] ? (
-                  <><strong>Local Setup:</strong> Hardware-native sync.</>
-                ) : (
-                  <strong>Secured on local hardware.</strong>
-                )}
-              </span>
-            </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button className="share-btn hide-mobile" onClick={handleLink}>
-              <Share2 size={16} />
-              Share
-            </button>
+          <div className="status-container">
+            {!readyModels[DEFAULT_MODEL] || isInitializing ? (
+              <button
+                className="share-btn"
+                onClick={() => handleAction(true)}
+                disabled={loading || isInitializing}
+              >
+                {isInitializing ? `Loading ${progress?.percent || 0}%` : 'Initialize Model'}
+              </button>
+            ) : (
+              <div className="ready-badge">
+                <Zap size={14} fill="currentColor" />
+                <span>Ready</span>
+              </div>
+            )}
           </div>
         </header>
 
         <div className="messages-container">
           {activeChat.messages.length === 0 ? (
             <div className="welcome-screen">
-              <Logo size={100} />
-              <div className="brand-logo brand-gradient" style={{ marginTop: '1rem' }}>AI PLATFORM</div>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
-                <span className="badge">OPEN SOURCE</span>
-                <span className="badge free">100% FREE</span>
-              </div>
-              <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>
-                Private, Offline Intelligence.
-              </p>
-
+              <h1 className="brand-logo">Private AI Chat</h1>
               <div className="features-grid">
-                <div className="feature-card glass-panel">
-                  <Shield size={24} color="var(--accent-secondary)" />
-                  <h3>100% Private</h3>
-                  <p>Your data stays on your device. Local processing, zero cloud interaction.</p>
+                <div className="feature-card">
+                  <h3>Secure & Private</h3>
+                  <p>Messages never leave your device. All processing happens locally.</p>
                 </div>
-                <div className="feature-card glass-panel">
-                  <Cpu size={24} color="var(--accent-secondary)" />
-                  <h3>Local Intelligence</h3>
-                  <p>Runs directly on your computer. High-performance, zero latency processing.</p>
+                <div className="feature-card">
+                  <h3>Offline Access</h3>
+                  <p>Once loaded, chat anywhere without an internet connection.</p>
                 </div>
-                <div className="feature-card glass-panel">
-                  <Zap size={24} color="var(--accent-secondary)" />
-                  <h3>Extreme Speed</h3>
-                  <p>State-of-the-art local architecture for high-performance, real-time AI responses.</p>
+                <div className="feature-card">
+                  <h3>Open Source</h3>
+                  <p>Built with transparent, high-performance local AI technology.</p>
                 </div>
-              </div>
-              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.7rem', marginTop: '1.5rem', fontStyle: 'italic' }}>
-                Once synced, this platform runs entirely from your local hardware.
-              </p>
-
-              <div style={{ marginTop: '2rem' }}>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                  Initialize from the header to start chatting offline.
-                </p>
               </div>
             </div>
           ) : (
             <div className="messages-stream">
-              <AnimatePresence>
-                {activeChat.messages.map((m, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <ChatMessage message={m} />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+              {activeChat.messages.map((m, i) => (
+                <div key={i} className={`message-wrapper ${m.role === 'assistant' ? 'ai-message' : 'user-message'}`}>
+                  <div className="message-content-inner">
+                    <div className={`avatar ${m.role === 'assistant' ? 'ai' : 'user'}`}>
+                      {m.role === 'assistant' ? <Cpu size={16} /> : <User size={16} />}
+                    </div>
+                    <div className="message-content">
+                      <ChatMessage message={m} />
+                    </div>
+                  </div>
+                </div>
+              ))}
               {loading && !activeChat.messages[activeChat.messages.length - 1]?.content && (
-                <div style={{ textAlign: 'center', padding: '2rem' }}>
-                  <div className="shimmer-bg" style={{ height: '4px', width: '100px', margin: '0 auto', borderRadius: '100px' }}></div>
+                <div className="message-wrapper ai-message">
+                  <div className="message-content-inner">
+                    <div className="avatar ai"><Cpu size={16} /></div>
+                    <div className="message-content">
+                      <div className="shimmer-bg" style={{ height: '20px', width: '60%', borderRadius: '4px' }}></div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -371,10 +262,10 @@ function App() {
         </div>
 
         <footer className="input-area">
-          <div className="input-container glass-panel">
+          <div className="input-container">
             <textarea
               ref={textareaRef}
-              placeholder="Enter prompt..."
+              placeholder="Message AI..."
               rows={1}
               value={input}
               onChange={(e) => {
@@ -389,32 +280,37 @@ function App() {
                 }
               }}
             />
-
             <button
               className="send-btn"
               onClick={handleAction}
               disabled={loading || !input.trim()}
             >
-              <Zap size={18} />
+              <Send size={16} />
             </button>
           </div>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '10px' }}>
-            Private Local Engine v1.1.0
+          <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.75rem' }}>
+            AI can make mistakes. Check important info.
           </p>
         </footer>
       </main>
 
-      {
-        showSettings && (
+      <AnimatePresence>
+        {showSettings && (
           <div className="modal-overlay" onClick={() => setShowSettings(false)}>
-            <div className="modal-content glass-panel" onClick={e => e.stopPropagation()}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <h2 className="brand-gradient" style={{ margin: 0 }}>Identity Settings</h2>
-                <X size={20} className="action-icon" onClick={() => setShowSettings(false)} style={{ opacity: 1 }} />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="modal-content" 
+              onClick={e => e.stopPropagation()}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h2 style={{ fontSize: '1.2rem', margin: 0 }}>Settings</h2>
+                <X size={20} className="action-icon" onClick={() => setShowSettings(false)} />
               </div>
 
               <div className="setting-item">
-                <label>Profile Name</label>
+                <label>Display Name</label>
                 <input
                   type="text"
                   value={userProfile.name}
@@ -423,69 +319,12 @@ function App() {
                 />
               </div>
 
-              <div className="setting-item">
-                <label>Avatar Preference</label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--bg-card)', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                    {userProfile.avatar ? (
-                      <img src={userProfile.avatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <User size={24} color="var(--text-muted)" />
-                    )}
-                  </div>
-                  <label className="upload-btn">
-                    <Download size={16} />
-                    Upload Image
-                    <input type="file" hidden accept="image/*" onChange={handleAvatarChange} />
-                  </label>
-                </div>
-              </div>
-
-              <button className="new-chat-btn" style={{ width: '100%', marginTop: '2rem' }} onClick={handleUpdate}>Update Identity</button>
-            </div>
+              <button className="send-btn" style={{ width: '100%', height: '40px', background: '#ececec' }} onClick={() => setShowSettings(false)}>Save Changes</button>
+            </motion.div>
           </div>
-        )
-      }
-
-      {
-        showDocs && (
-          <div className="modal-overlay" onClick={() => setShowDocs(false)}>
-            <div className="modal-content glass-panel docs-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <h2 className="brand-gradient" style={{ margin: 0 }}>Documentation</h2>
-                <X size={20} className="action-icon" onClick={() => setShowDocs(false)} style={{ opacity: 1 }} />
-              </div>
-
-              <div className="docs-content" style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: '1rem' }}>
-                <h3>By bxzex</h3>
-                <p>
-                  OpenSource AI Platform is a private intelligence layer built by <strong>bxzex</strong>. It runs entirely on your hardware—no cloud, no tracking, and 100% free.
-                </p>
-
-                <h4>The Essentials</h4>
-                <ul style={{ paddingLeft: '1.2rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>
-                  <li><strong>Local Intelligence:</strong> High-performance, offline processing synced directly to your device.</li>
-                  <li><strong>AI Core:</strong> State-of-the-art neural architecture optimized for private reasoning.</li>
-                  <li><strong>Privacy Standard:</strong> Your chats and data never leave your hardware.</li>
-                </ul>
-
-                <div style={{ marginTop: '2rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
-                  <h4 style={{ marginBottom: '1rem' }}>bxzex Social Media</h4>
-                  <div className="social-links" style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-                    <a href="http://bxzex.com/" target="_blank" className="social-link"><Globe size={18} /> Website</a>
-                    <a href="https://github.com/bxzex" target="_blank" className="social-link"><Github size={18} /> GitHub</a>
-                    <a href="https://www.instagram.com/bxzex/" target="_blank" className="social-link"><Instagram size={18} /> Instagram</a>
-                    <a href="https://www.linkedin.com/in/bxzex/" target="_blank" className="social-link"><Linkedin size={18} /> LinkedIn</a>
-                  </div>
-                </div>
-              </div>
-
-              <button className="new-chat-btn" style={{ width: '100%', marginTop: '2rem' }} onClick={() => setShowDocs(false)}>Close</button>
-            </div>
-          </div>
-        )
-      }
-    </div >
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
