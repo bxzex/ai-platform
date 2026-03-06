@@ -3,8 +3,10 @@
   height: 100vh;
   width: 100vw;
   background-color: var(--bg-dark);
+  color: var(--text-main);
 }
 
+/* Sidebar Refinement */
 .sidebar {
   width: 260px;
   height: 100%;
@@ -29,12 +31,14 @@
   cursor: pointer;
   font-family: inherit;
   font-weight: 500;
-  transition: var(--transition-smooth);
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
   margin-bottom: 1rem;
 }
 
 .new-chat-btn:hover {
   background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .chat-history {
@@ -51,18 +55,23 @@
   cursor: pointer;
   font-size: 0.85rem;
   color: var(--text-main);
-  transition: var(--transition-smooth);
+  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   gap: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  position: relative;
 }
 
-.history-item:hover,
+.history-item:hover {
+  background: #2f2f2f;
+}
+
 .history-item.active {
   background: #2f2f2f;
+  font-weight: 500;
 }
 
 .history-item span {
@@ -73,7 +82,7 @@
 
 .action-icon {
   opacity: 0;
-  transition: var(--transition-smooth);
+  transition: all 0.2s ease;
   color: var(--text-muted);
   flex-shrink: 0;
 }
@@ -86,6 +95,7 @@
   color: var(--text-main);
 }
 
+/* Main Chat Refinement */
 .chat-main {
   flex: 1;
   display: flex;
@@ -108,13 +118,20 @@
 
 .model-selector {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
   color: var(--text-main);
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   outline: none;
   cursor: pointer;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+}
+
+.model-selector:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .ready-badge {
@@ -122,8 +139,11 @@
   align-items: center;
   gap: 6px;
   color: #10a37f;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(16, 163, 127, 0.1);
 }
 
 .messages-container {
@@ -146,10 +166,11 @@
   justify-content: center;
   width: 100%;
   padding: 1.5rem 1rem;
+  transition: background 0.3s ease;
 }
 
 .ai-message {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .user-message {
@@ -160,17 +181,19 @@
   max-width: 768px;
   width: 100%;
   display: flex;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .avatar {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .avatar.user {
@@ -185,14 +208,15 @@
 
 .message-content {
   flex: 1;
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.65;
   color: #ececec;
   padding-top: 2px;
 }
 
+/* Input Area Refinement */
 .input-area {
-  padding: 1rem 1rem 2rem;
+  padding: 1rem 1rem 1.5rem;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -201,15 +225,21 @@
 
 .input-container {
   position: relative;
-  background: transparent;
+  background: #2f2f2f;
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 0.75rem 1rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   width: 100%;
   max-width: 768px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.2s ease;
+}
+
+.input-container:focus-within {
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 textarea {
@@ -218,26 +248,32 @@ textarea {
   border: none;
   color: var(--text-main);
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.5;
   min-height: 1.5rem;
   resize: none;
   max-height: 200px;
   outline: none;
+  padding: 2px 0;
 }
 
 .send-btn {
   background: var(--text-main);
   color: var(--bg-dark);
   border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: var(--transition-smooth);
+  transition: all 0.2s ease;
+}
+
+.send-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: scale(1.05);
 }
 
 .send-btn:disabled {
@@ -256,9 +292,10 @@ textarea {
 }
 
 .brand-logo {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 600;
   margin-bottom: 2rem;
+  letter-spacing: -0.5px;
 }
 
 .features-grid {
@@ -270,23 +307,33 @@ textarea {
 }
 
 .feature-card {
-  padding: 1rem;
+  padding: 1.25rem;
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  text-align: center;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.01);
+  transition: all 0.2s ease;
+}
+
+.feature-card:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .feature-card h3 {
   font-size: 0.9rem;
-  margin: 0.5rem 0;
+  margin-bottom: 0.5rem;
   color: var(--text-main);
+  font-weight: 600;
 }
 
 .feature-card p {
   font-size: 0.8rem;
   color: var(--text-muted);
+  line-height: 1.5;
 }
 
+/* Modal Styling */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -298,15 +345,17 @@ textarea {
   align-items: center;
   justify-content: center;
   z-index: 100;
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
   width: 90%;
-  max-width: 500px;
+  max-width: 440px;
   padding: 2rem;
   border-radius: 12px;
-  background: var(--bg-card);
+  background: #2f2f2f;
   border: 1px solid var(--border-color);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
 .setting-item {
@@ -315,31 +364,28 @@ textarea {
 
 .setting-item label {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--text-muted);
   margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .glass-input {
   width: 100%;
-  background: var(--bg-dark);
+  background: #212121;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.75rem;
   color: var(--text-main);
   outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
 }
 
-.upload-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: #2f2f2f;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  cursor: pointer;
+.glass-input:focus {
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .share-btn {
@@ -350,21 +396,32 @@ textarea {
   border: 1px solid var(--border-color);
   color: var(--text-main);
   padding: 0.4rem 0.75rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.8rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.share-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
     left: -260px;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .sidebar.mobile-open {
     transform: translateX(260px);
   }
   .menu-toggle {
     display: flex;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
   }
 }
