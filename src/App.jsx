@@ -126,6 +126,10 @@ function App() {
     };
     setChats([newChat, ...chats]);
     setActiveChatId(newChat.id);
+    setInput('');
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
   };
 
   const handleDeleteChat = (id) => {

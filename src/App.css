@@ -116,6 +116,23 @@
   z-index: 10;
 }
 
+.menu-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: #ececec;
+  cursor: pointer;
+  padding: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .model-selector {
   background: transparent;
   border: 1px solid transparent;
@@ -419,9 +436,5 @@ textarea {
   }
   .menu-toggle {
     display: flex;
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
   }
 }

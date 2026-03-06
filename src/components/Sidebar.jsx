@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, MessageSquare, Trash2, Download, Settings, X, Github, User } from 'lucide-react';
+import { Plus, MessageSquare, Trash2, Download, Settings, X, Github } from 'lucide-react';
 
 const Sidebar = ({ 
   chats, 
@@ -20,19 +20,21 @@ const Sidebar = ({
           <Plus size={18} />
           New Chat
         </button>
-        <button className="close-sidebar-mobile" onClick={onClose} style={{ 
-          background: 'none', 
-          border: '1px solid var(--border-color)', 
-          borderRadius: '8px',
-          padding: '0.5rem',
-          color: 'white',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <X size={18} />
-        </button>
+        {isOpen && (
+          <button className="close-sidebar-mobile" onClick={onClose} style={{ 
+            background: 'none', 
+            border: '1px solid var(--border-color)', 
+            borderRadius: '8px',
+            padding: '0.5rem',
+            color: 'white',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <X size={18} />
+          </button>
+        )}
       </div>
 
       <div className="chat-history">
@@ -75,7 +77,7 @@ const Sidebar = ({
             {userProfile.avatar ? (
               <img src={userProfile.avatar} alt="User" style={{ width: '100%', height: '100%', borderRadius: '6px', objectFit: 'cover' }} />
             ) : (
-              userProfile.name[0].toUpperCase()
+              userProfile.name[0]?.toUpperCase() || 'U'
             )}
           </div>
           <span style={{ fontWeight: 500, fontSize: '0.9rem' }}>{userProfile.name}</span>
@@ -92,6 +94,10 @@ const Sidebar = ({
           <Github size={16} style={{ opacity: 0.7 }} />
           <span style={{ fontSize: '0.9rem' }}>GitHub</span>
         </a>
+
+        <div style={{ padding: '0.75rem', fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', opacity: 0.5 }}>
+          Developed by bxzex
+        </div>
       </div>
     </aside>
   );
