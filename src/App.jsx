@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Zap, Shield, Cpu, Share2, X, Github, User, Download, Menu, Bot } from 'lucide-react';
+import { Send, Zap, Shield, Cpu, Share2, X, Github, User, Download, Menu, Bot, Upload } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ChatMessage from './components/ChatMessage';
 import { useEngine } from './hooks/useEngine';
@@ -155,6 +155,17 @@ function App() {
     document.body.removeChild(a);
   };
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUserProfile(prev => ({ ...prev, avatar: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="app-container">
       <Sidebar
@@ -173,9 +184,11 @@ function App() {
       <main className="chat-main">
         <header className="chat-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <button className="menu-toggle" onClick={() => setIsSidebarOpen(true)}>
-              <Menu size={20} />
-            </button>
+            {!isSidebarOpen && (
+              <button className="menu-toggle" onClick={() => setIsSidebarOpen(true)}>
+                <Menu size={20} />
+              </button>
+            )}
             <select
               className="model-selector"
               value={model}
@@ -228,7 +241,15 @@ function App() {
                 <div key={i} className={`message-wrapper ${m.role === 'assistant' ? 'ai-message' : 'user-message'}`}>
                   <div className="message-content-inner">
                     <div className={`avatar ${m.role === 'assistant' ? 'ai' : 'user'}`}>
-                      {m.role === 'assistant' ? <Bot size={18} /> : <User size={18} />}
+                      {m.role === 'assistant' ? (
+                        <Bot size={18} />
+                      ) : (
+                        userProfile.avatar ? (
+                          <img src={userProfile.avatar} alt="User" style={{ width: '100%', height: '100%', borderRadius: '4px' }} />
+                        ) : (
+                          <User size={18} />
+                        )
+                      )}
                     </div>
                     <div className="message-content">
                       {m.content === '' && m.role === 'assistant' ? (
@@ -303,7 +324,34 @@ function App() {
                 />
               </div>
 
-              <button className="send-btn" style={{ width: '100%', height: '40px', background: '#ececec' }} onClick={() => setShowSettings(false)}>Save Changes</button>
+              <div className="setting-item">
+                <label>Profile Picture</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <div className="avatar user" style={{ width: '64px', height: '64px', borderRadius: '8px' }}>
+                    {userProfile.avatar ? (
+                      <img src={userProfile.avatar} alt="Preview" style={{ width: '100%', height: '100%', borderRadius: '8px', objectFit: 'cover' }} />
+                    ) : (
+                      <User size={32} />
+                    )}
+                  </div>
+                  <label className="upload-btn">
+                    <Upload size={16} />
+                    Upload Image
+                    <input type="file" hidden accept="image/*" onChange={handleAvatarChange} />
+                  </label>
+                  {userProfile.avatar && (
+                    <button 
+                      className="share-btn" 
+                      style={{ color: '#ef4444' }}
+                      onClick={() => setUserProfile(prev => ({ ...prev, avatar: null }))}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <button className="send-btn" style={{ width: '100%', height: '40px', background: '#ececec', marginTop: '1rem' }} onClick={() => setShowSettings(false)}>Save Changes</button>
             </motion.div>
           </div>
         )}
