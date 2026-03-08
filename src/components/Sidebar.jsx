@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, MessageSquare, Trash2, Download, Settings, X, Github, Linkedin, Instagram } from 'lucide-react';
+import { Plus, MessageSquare, Trash2, Download, Settings, X, Github, Linkedin, Instagram, Heart } from 'lucide-react';
 
 const Sidebar = ({ 
   chats, 
@@ -83,6 +83,17 @@ const Sidebar = ({
           <span style={{ fontWeight: 500, fontSize: '0.9rem' }}>{userProfile.name}</span>
           <Settings size={16} className="action-icon" style={{ opacity: 1 }} />
         </div>
+
+        <a 
+          href="https://buy.stripe.com/9B6eVfd9E6OC3sr7cEaAw03" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="history-item"
+          style={{ textDecoration: 'none', color: '#10a37f', padding: '0.75rem' }}
+        >
+          <Heart size={16} fill="currentColor" />
+          <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>Support Project</span>
+        </a>
         
         <a 
           href="https://github.com/bxzex" 
