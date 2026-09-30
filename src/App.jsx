@@ -235,7 +235,7 @@ function App() {
                 </div>
                 <div className="feature-card">
                   <h3>Open Source</h3>
-                  <p>Built with transparent, high-performance local AI technology.</p>
+                  <p>The code is on GitHub. Read it, fork it, or run it yourself.</p>
                 </div>
               </div>
             </div>
