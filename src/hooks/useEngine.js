@@ -70,8 +70,8 @@ export const useEngine = () => {
         } catch (err) {
             console.error("Core Processing Error:", err);
             setProgress(null);
-            const errorMsg = err?.message || err?.toString() || 'Unknown synchronization error';
-            throw new Error('Connection lost: ' + errorMsg);
+            const errorMsg = err?.message || err?.toString() || 'unknown error';
+            throw new Error('The model could not run: ' + errorMsg);
         } finally {
             setLoading(false);
         }

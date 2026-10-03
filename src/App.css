@@ -155,12 +155,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #10a37f;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 6px;
-  background: rgba(16, 163, 127, 0.1);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: 4px 0;
 }
 
 .messages-container {
@@ -214,13 +211,13 @@
 }
 
 .avatar.user {
-  background: #5436da;
-  color: white;
+  background: #4a4a4a;
+  color: #ececec;
 }
 
 .avatar.ai {
-  background: #10a37f;
-  color: white;
+  background: #e2b25c;
+  color: #1b1b1b;
 }
 
 .message-content {
@@ -362,7 +359,6 @@ textarea {
   align-items: center;
   justify-content: center;
   z-index: 100;
-  backdrop-filter: blur(4px);
 }
 
 .modal-content {
@@ -385,8 +381,6 @@ textarea {
   font-weight: 600;
   color: var(--text-muted);
   margin-bottom: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .glass-input {
@@ -437,4 +431,73 @@ textarea {
   .menu-toggle {
     display: flex;
   }
+}
+
+.model-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 4px 8px;
+}
+
+.model-name span {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.welcome-facts {
+  list-style: none;
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: left;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.welcome-facts li {
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.welcome-facts b {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.welcome-warning {
+  max-width: 520px;
+  margin: 0 auto 1.25rem;
+  font-size: 0.9rem;
+  color: #e2b25c;
+}
+
+.copyright {
+  padding: 0.75rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: center;
+  opacity: 0.7;
+}
+
+.copyright a {
+  color: inherit;
+}
+
+@media (max-width: 768px) {
+  .model-name span {
+    display: none;
+  }
+}
+
+.upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-bottom: 0;
 }

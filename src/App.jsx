@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Zap, Shield, Cpu, Share2, X, Github, User, Download, Menu, Bot, Upload } from 'lucide-react';
+import { Send, X, User, Menu, Bot, Upload } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ChatMessage from './components/ChatMessage';
 import { useEngine } from './hooks/useEngine';
@@ -20,12 +20,12 @@ function App() {
   const [chats, setChats] = useState(getInitialChats);
   const [activeChatId, setActiveChatId] = useState(chats[0].id);
   const [input, setInput] = useState('');
-  const [model, setModel] = useState('Llama-3.2-3B-Instruct-q4f32_1-MLC');
   const DEFAULT_MODEL = 'Llama-3.2-3B-Instruct-q4f32_1-MLC';
   const [showSettings, setShowSettings] = useState(false);
   const [userProfile, setUserProfile] = useState(getInitialUser);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
+  const hasWebGPU = typeof navigator !== 'undefined' && 'gpu' in navigator;
 
   const [readyModels, setReadyModels] = useState(() => {
     try {
@@ -49,6 +49,13 @@ function App() {
   useEffect(() => {
     localStorage.setItem('ai_platform_user', JSON.stringify(userProfile));
   }, [userProfile]);
+
+  useEffect(() => {
+    if (!showSettings) return;
+    const onKey = (e) => { if (e.key === 'Escape') setShowSettings(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showSettings]);
 
   const activeChat = chats.find(c => c.id === activeChatId) || chats[0];
 
@@ -133,15 +140,13 @@ function App() {
   };
 
   const handleDeleteChat = (id) => {
-    setChats(prev => {
-      const filtered = prev.filter(c => c.id !== id);
-      if (filtered.length === 0) {
-        return [{ id: Date.now().toString(), title: 'New Chat', messages: [] }];
-      }
-      return filtered;
-    });
+    let remaining = chats.filter(c => c.id !== id);
+    if (remaining.length === 0) {
+      remaining = [{ id: Date.now().toString(), title: 'New Chat', messages: [] }];
+    }
+    setChats(remaining);
     if (activeChatId === id) {
-      setActiveChatId(chats[0].id);
+      setActiveChatId(remaining[0].id);
     }
   };
 
@@ -193,13 +198,7 @@ function App() {
                 <Menu size={20} />
               </button>
             )}
-            <select
-              className="model-selector"
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-            >
-              <option value={DEFAULT_MODEL}>Llama 3.2 (Local)</option>
-            </select>
+            <div className="model-name">Llama 3.2 3B <span>running in this browser</span></div>
           </div>
 
           <div className="status-container">
@@ -209,12 +208,11 @@ function App() {
                 onClick={() => handleAction(true)}
                 disabled={loading || isInitializing}
               >
-                {isInitializing ? `Loading ${progress?.percent || 0}%` : 'Initialize Model'}
+                {isInitializing ? `Loading ${progress?.percent || 0}%` : 'Download model'}
               </button>
             ) : (
               <div className="ready-badge">
-                <Zap size={14} fill="currentColor" />
-                <span>Ready</span>
+                <span>Model loaded</span>
               </div>
             )}
           </div>
@@ -224,20 +222,16 @@ function App() {
           {activeChat.messages.length === 0 ? (
             <div className="welcome-screen">
               <h1 className="brand-logo">Private AI Chat</h1>
-              <div className="features-grid">
-                <div className="feature-card">
-                  <h3>Secure & Private</h3>
-                  <p>Messages never leave your device. All processing happens locally.</p>
-                </div>
-                <div className="feature-card">
-                  <h3>Offline Access</h3>
-                  <p>Once loaded, chat anywhere without an internet connection.</p>
-                </div>
-                <div className="feature-card">
-                  <h3>Open Source</h3>
-                  <p>The code is on GitHub. Read it, fork it, or run it yourself.</p>
-                </div>
-              </div>
+              {!hasWebGPU && (
+                <p className="welcome-warning">
+                  This browser does not support WebGPU, so the model cannot load here. Try a recent Chrome or Edge on a desktop.
+                </p>
+              )}
+              <ul className="welcome-facts">
+                <li><b>Nothing is sent anywhere.</b> The model runs on your own graphics card through WebGPU, and chats are kept in this browser's storage.</li>
+                <li><b>One download, about 2 GB.</b> The first load fetches Llama 3.2 3B and caches it. After that it starts from the cache and works offline.</li>
+                <li><b>Open source.</b> The code is on <a href="https://github.com/bxzex/ai-platform" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>GitHub</a>. Read it, fork it, or run it yourself.</li>
+              </ul>
             </div>
           ) : (
             <div className="messages-stream">
@@ -274,7 +268,7 @@ function App() {
           <div className="input-container">
             <textarea
               ref={textareaRef}
-              placeholder="Message AI..."
+              placeholder="Message Llama 3.2"
               rows={1}
               value={input}
               onChange={(e) => {
@@ -298,7 +292,7 @@ function App() {
             </button>
           </div>
           <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.75rem' }}>
-            AI can make mistakes. Check important info.
+            A small local model gets things wrong. Check anything important.
           </p>
         </footer>
       </main>
@@ -319,7 +313,7 @@ function App() {
               </div>
 
               <div className="setting-item">
-                <label>Display Name</label>
+                <label>Display name</label>
                 <input
                   type="text"
                   value={userProfile.name}
@@ -329,7 +323,7 @@ function App() {
               </div>
 
               <div className="setting-item">
-                <label>Profile Picture</label>
+                <label>Profile picture</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   <div className="avatar user" style={{ width: '64px', height: '64px', borderRadius: '8px' }}>
                     {userProfile.avatar ? (
@@ -340,7 +334,7 @@ function App() {
                   </div>
                   <label className="upload-btn">
                     <Upload size={16} />
-                    Upload Image
+                    Upload image
                     <input type="file" hidden accept="image/*" onChange={handleAvatarChange} />
                   </label>
                   {userProfile.avatar && (
@@ -355,7 +349,7 @@ function App() {
                 </div>
               </div>
 
-              <button className="send-btn" style={{ width: '100%', height: '40px', background: '#ececec', marginTop: '1rem' }} onClick={() => setShowSettings(false)}>Save Changes</button>
+              <button className="send-btn" style={{ width: '100%', height: '40px', background: '#ececec', marginTop: '1rem' }} onClick={() => setShowSettings(false)}>Done</button>
             </motion.div>
           </div>
         )}

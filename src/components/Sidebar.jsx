@@ -89,14 +89,14 @@ const Sidebar = ({
           target="_blank" 
           rel="noopener noreferrer"
           className="history-item"
-          style={{ textDecoration: 'none', color: '#10a37f', padding: '0.75rem' }}
+          style={{ textDecoration: 'none', color: 'inherit', padding: '0.75rem' }}
         >
-          <Heart size={16} fill="currentColor" />
-          <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>Support Project</span>
+          <Heart size={16} style={{ opacity: 0.7 }} />
+          <span style={{ fontSize: '0.9rem' }}>Support the project</span>
         </a>
         
         <a 
-          href="https://github.com/bxzex" 
+          href="https://github.com/bxzex/ai-platform" 
           target="_blank" 
           rel="noopener noreferrer"
           className="history-item"
@@ -128,8 +128,8 @@ const Sidebar = ({
           <span style={{ fontSize: '0.9rem' }}>Instagram</span>
         </a>
 
-        <div style={{ padding: '0.75rem', fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', opacity: 0.5 }}>
-          Developed by bxzex
+        <div className="copyright">
+          &copy; 2026 <a href="https://bxzex.com" target="_blank" rel="noopener noreferrer">bxzex</a>
         </div>
       </div>
     </aside>
